@@ -1,0 +1,26 @@
+{
+  "n": 61,
+  "size_MB": 119.2,
+  "train_mean": [
+    0.6419000029563904,
+    0.6689000129699707,
+    0.6686999797821045
+  ],
+  "train_std": [
+    0.2702000141143799,
+    0.26660001277923584,
+    0.2669000029563904
+  ],
+  "pipeline": {
+    "target_size": [
+      224,
+      224
+    ],
+    "channels": "RGB (RGBA->RGB)",
+    "resize": "resize+center-crop (52 sizes->fixed)",
+    "normalize": "mean=[0.6419000029563904, 0.6689000129699707, 0.6686999797821045] std=[0.2702000141143799, 0.26660001277923584, 0.2669000029563904] (from TRAIN only)",
+    "augment": "small brightness/contrast + slight rotation ONLY; NO h-flip (screenshots may contain text); NO heavy crop (UI edges matter)",
+    "split": "time-ordered 70/15/15",
+    "metric": "unsupervised: visual-consistency; if labeled later: macro-F1"
+  }
+}
