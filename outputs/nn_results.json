@@ -1,0 +1,94 @@
+{
+  "best_config": {
+    "lr": 0.001,
+    "hidden": 256,
+    "dropout": 0.5,
+    "wd": 0.0001
+  },
+  "grid": [
+    {
+      "config": "lr=0.001 hidden=128 drop=0.3",
+      "lr": 0.001,
+      "hidden": 128,
+      "dropout": 0.3,
+      "val_macro_f1": 0.775
+    },
+    {
+      "config": "lr=0.001 hidden=128 drop=0.5",
+      "lr": 0.001,
+      "hidden": 128,
+      "dropout": 0.5,
+      "val_macro_f1": 0.775
+    },
+    {
+      "config": "lr=0.001 hidden=256 drop=0.3",
+      "lr": 0.001,
+      "hidden": 256,
+      "dropout": 0.3,
+      "val_macro_f1": 1.0
+    },
+    {
+      "config": "lr=0.001 hidden=256 drop=0.5",
+      "lr": 0.001,
+      "hidden": 256,
+      "dropout": 0.5,
+      "val_macro_f1": 1.0
+    },
+    {
+      "config": "lr=0.0001 hidden=128 drop=0.3",
+      "lr": 0.0001,
+      "hidden": 128,
+      "dropout": 0.3,
+      "val_macro_f1": 0.8831
+    },
+    {
+      "config": "lr=0.0001 hidden=128 drop=0.5",
+      "lr": 0.0001,
+      "hidden": 128,
+      "dropout": 0.5,
+      "val_macro_f1": 0.775
+    },
+    {
+      "config": "lr=0.0001 hidden=256 drop=0.3",
+      "lr": 0.0001,
+      "hidden": 256,
+      "dropout": 0.3,
+      "val_macro_f1": 0.775
+    },
+    {
+      "config": "lr=0.0001 hidden=256 drop=0.5",
+      "lr": 0.0001,
+      "hidden": 256,
+      "dropout": 0.5,
+      "val_macro_f1": 0.775
+    }
+  ],
+  "test_accuracy": 80.0,
+  "classification_report": "              precision    recall  f1-score   support\n\n       Early     0.7500    1.0000    0.8571         6\n        Late     1.0000    0.5000    0.6667         4\n\n    accuracy                         0.8000        10\n   macro avg     0.8750    0.7500    0.7619        10\nweighted avg     0.8500    0.8000    0.7810        10\n",
+  "confusion": {
+    "y_true": [
+      0,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "y_pred": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  }
+}
