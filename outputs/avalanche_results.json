@@ -1,0 +1,13 @@
+{
+  "best_config": {
+    "lr": 0.001,
+    "hidden": 256,
+    "dropout": 0.5,
+    "wd": 0.0001
+  },
+  "test_accuracy": 60.0,
+  "classes": [
+    "avalanche",
+    "no_avalanche"
+  ]
+}
