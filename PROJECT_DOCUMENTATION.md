@@ -1,5 +1,7 @@
-# Khumbu Icefall Avalanche & Flood Early Warning System — TECH-405
+# Khumbu Icefall Glacier Monitoring — TECH-405
 ## Complete Project Documentation
+
+> What this repo does and does not do: the CNNs classify image appearance (Early-vs-Late era; snow/ice/debris surface). They do **not** predict avalanches, floods, or GLOFs — the dataset has no flood labels, no lake outlines, and no outburst before/after pairs.
 
 ---
 
@@ -21,15 +23,16 @@
 
 ## 1. Project Overview
 
-**Project Name:** Khumbu Icefall Flood Early Warning System (TECH-405)
+**Project Name:** Khumbu Icefall Glacier Monitoring (TECH-405)
 
-This project builds a complete machine learning pipeline — from raw satellite imagery to a trained classifier — to detect patterns in Khumbu Icefall satellite images that can predict the risk of future avalanches and glacial lake outburst floods (GLOFs).
+This project builds machine learning pipelines — from raw imagery to trained classifiers — to describe how Khumbu Icefall satellite images **look** (era appearance; snow/ice/debris surface cover). It is monitoring, not an avalanche/flood early-warning system.
 
 The **Khumbu Icefall** is a constantly moving, highly unstable glacier located on the southern slope of Mount Everest in the Sagarmatha region of Nepal. It is one of the most dangerous sections on the standard Everest climbing route. Over recent decades, climate change has accelerated glacial retreat and increased avalanche frequency in this region.
 
-The goal is to classify satellite images into two risk categories:
-- **Early (Low Risk Context):** Images from before 2015, representing a period of relative glacial stability.
-- **Late (High Risk Context):** Images from 2015 onward, representing a period of accelerating glacial change and increased avalanche/flood risk.
+The goal is to classify satellite images into two appearance categories:
+- **Early:** Images from before 2015 (screenshot appearance proxy).
+- **Late:** Images from 2015 onward (screenshot appearance proxy).
+- Separately, `s2/` maps **snow / ice / debris** surface cover from Sentinel-2 (or fallback screenshot patches). Neither output is a hazard forecast.
 
 ---
 
@@ -271,7 +274,7 @@ The trained model was saved to: `outputs/khumbu_cnn.pt`
 ## 6. Phase 3: Inference / Prediction Notebook
 
 **Notebook:** `predict.ipynb`  
-**Purpose:** Use the trained model to predict avalanche risk on any new satellite image.
+**Purpose:** Show the trained model's Early-vs-Late appearance prediction on a new screenshot. It does **not** predict avalanche/flood risk.
 
 ### Notebook Structure
 
@@ -294,13 +297,9 @@ IMAGE_PATH = "dataset/2021.11.13.png"  # ← change to your image
 Then run all cells. Output example:
 ```
 ==================================================
-🛰️  Prediction: Late (High Avalanche/Flood Risk Context)
-🎯 Confidence: 92.35%
+🛰️  ERA APPEARANCE PREDICTION (not a hazard warning):
+    Late-era appearance (>=2015)
 --------------------------------------------------
-Probability Breakdown:
-  - Early (<=2014): 7.65%
-  - Late (>=2015):  92.35%
-==================================================
 ```
 
 ---
@@ -369,7 +368,9 @@ Probability Breakdown:
 ### Prerequisites
 
 ```bash
-pip install torch torchvision pillow pandas numpy matplotlib scikit-learn jupyter
+pip install torch pillow pandas numpy matplotlib scikit-learn jupyter
+# for the Sentinel-2 surface-mapping track (s2/):
+pip install rasterio requests tifffile
 ```
 
 ### Step 1: Run EDA
@@ -434,14 +435,17 @@ Open `predict.ipynb`, change `IMAGE_PATH` in Cell 4 to your satellite image, and
 | Limitation | Details |
 |---|---|
 | **Small Dataset** | Only 61 images. The model may overfit or generalize poorly to images from other sensors or resolutions. |
-| **Binary Labels Only** | The model only distinguishes "Early" vs "Late" eras. It does not directly detect avalanche events. |
+| **Binary Labels Only** | The era model only distinguishes "Early" vs "Late" screenshot appearance. It does not detect or forecast avalanche/flood events. |
+| **No Flood Signal** | No flood/GLOF labels, lake outlines, or outburst pairs exist in this dataset — floods cannot be a training target. |
+| **Avalanche Folders Are Not a Forecast** | 14 avalanche vs 47 no_avalanche, all avalanche files Apr–Jun 2014/2015; test 60% < 77% majority baseline. Single still images cannot forecast events. |
 | **Soft Proxy Labels** | Year ≥ 2015 is used as a proxy for high risk (inspired by the 2015 Everest earthquake), not direct event labels. |
 | **Visual Similarity** | Decade-mean cosine similarity >0.98 — the eras look nearly identical, making this a hard visual classification task. |
 | **No Temporal Sequence Modeling** | Images are treated as independent; temporal change detection (e.g., using LSTMs or video CNNs) is not implemented. |
 
 ### Future Improvements
 
-1. **More Data:** Collect more labeled satellite images, ideally with verified avalanche/flood event dates.
+1. **More Data:** Real Sentinel-2 scenes via `s2/download_sentinel2.py` (see `s2_surface_mapping.ipynb`); NDSI starter labels + manual cleanup.
+2. **Surface mapping (built, Sentinel-2 only):** `s2/` patch CNN (snow/ice/debris) on 5 real L2A crops (May 2021 – Dec 2024, NDSI starter labels, SCL cloud/shadow masking, scene-separated splits): ~840 patches after masking, test acc **~96%**, macro-F1 **~0.94** (`outputs/s2_results.json`). Self-contained training notebook: `s2_model_training.ipynb` (verifies headless via nbconvert). Cover trend `outputs/s2_cover_trend.png` + `s2_cover.csv`: spring scenes show more ice (May 2023 ice ~21% of valid), winter scenes debris-heavy with zero predicted ice — partly illumination, documented as a caveat. Next: ~200-patch manual audit to quantify starter-label noise.
 2. **Transfer Learning:** Use pre-trained ResNet-50 or EfficientNet as a backbone; fine-tune on this dataset for much better accuracy.
 3. **Change Detection:** Use pairs of before/after images and compute a difference map to detect structural changes in the glacier.
 4. **Real-time API:** Deploy the trained model as a REST API (FastAPI/Flask) so it can process new satellite images automatically.
@@ -450,4 +454,4 @@ Open `predict.ipynb`, change `IMAGE_PATH` in Cell 4 to your satellite image, and
 
 ---
 
-*Documentation written for TECH-405 — Khumbu Icefall Avalanche & Flood Early Warning System.*
+*Documentation written for TECH-405 — Khumbu Icefall Glacier Monitoring (surface/era appearance, not avalanche/flood forecasting).*

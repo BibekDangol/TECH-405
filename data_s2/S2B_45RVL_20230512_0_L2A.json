@@ -1,0 +1,13 @@
+{
+  "id": "S2B_45RVL_20230512_0_L2A",
+  "datetime": "2023-05-12T05:01:07.285000Z",
+  "cloud_cover": 12.373031,
+  "hrefs": {
+    "blue": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/45/R/VL/2023/5/S2B_45RVL_20230512_0_L2A/B02.tif",
+    "green": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/45/R/VL/2023/5/S2B_45RVL_20230512_0_L2A/B03.tif",
+    "red": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/45/R/VL/2023/5/S2B_45RVL_20230512_0_L2A/B04.tif",
+    "nir": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/45/R/VL/2023/5/S2B_45RVL_20230512_0_L2A/B08.tif",
+    "swir16": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/45/R/VL/2023/5/S2B_45RVL_20230512_0_L2A/B11.tif",
+    "scl": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/45/R/VL/2023/5/S2B_45RVL_20230512_0_L2A/SCL.tif"
+  }
+}
