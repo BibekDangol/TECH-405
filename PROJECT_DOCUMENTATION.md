@@ -3,6 +3,10 @@
 
 > What this repo does and does not do: the CNNs classify image appearance (Early-vs-Late era; snow/ice/debris surface). They do **not** predict avalanches, floods, or GLOFs — the dataset has no flood labels, no lake outlines, and no outburst before/after pairs.
 
+> Repository layout: two topic folders, each self-contained (run notebooks/scripts with CWD = topic folder).
+> `early_late/` holds the era-appearance track (`dataset/`, `eda.ipynb`, `neuralNetwork.ipynb`, `predict.ipynb`, `train_avalanche.py`, `outputs/`).
+> `sentinel2/` holds the surface-mapping track (`data_s2/`, `s2/`, `s2_simple.ipynb`, `outputs/`).
+
 ---
 
 ## Table of Contents
@@ -326,20 +330,24 @@ Then run all cells. Output example:
 
 | File | Description |
 |---|---|
-| `eda.ipynb` | Exploratory Data Analysis pipeline |
-| `neuralNetwork.ipynb` | CNN training, hyperparameter search, evaluation |
-| `predict.ipynb` | **Prediction notebook for new images** |
+| `early_late/eda.ipynb` | Exploratory Data Analysis pipeline |
+| `early_late/neuralNetwork.ipynb` | CNN training, hyperparameter search, evaluation |
+| `early_late/predict.ipynb` | **Prediction notebook for new images** |
+| `sentinel2/s2_simple.ipynb` | **Clean standalone Sentinel-2 patch CNN (snow/ice/debris)** |
 
 ### Outputs
 
 | File | Description |
 |---|---|
-| `outputs/file_index.csv` | Full metadata table of all 61 images |
-| `outputs/split.csv` | Chronological train/val/test split (EDA) |
-| `outputs/nn_split.csv` | Stratified split used by the CNN |
-| `outputs/eda_summary.json` | Normalization params, pipeline config |
-| `outputs/nn_results.json` | Grid search results, test metrics, confusion matrix |
-| `outputs/khumbu_cnn.pt` | **Saved trained CNN model weights** |
+| `early_late/outputs/file_index.csv` | Full metadata table of all 61 images |
+| `early_late/outputs/split.csv` | Chronological train/val/test split (EDA) |
+| `early_late/outputs/nn_split.csv` | Stratified split used by the CNN |
+| `early_late/outputs/eda_summary.json` | Normalization params, pipeline config |
+| `early_late/outputs/nn_results.json` | Grid search results, test metrics, confusion matrix |
+| `early_late/outputs/khumbu_cnn.pt` | **Saved trained CNN model weights** |
+| `sentinel2/outputs/s2_cnn.pt` | **Saved trained Sentinel-2 patch CNN weights** |
+| `sentinel2/outputs/s2_results.json` | S2 test metrics, confusion matrix |
+| `sentinel2/outputs/s2_simple.pt` | **Saved weights from the clean `s2_simple.ipynb`** |
 
 ### Figures Generated
 
@@ -375,6 +383,10 @@ pip install rasterio requests tifffile
 
 ### Step 1: Run EDA
 
+```bash
+cd early_late
+```
+
 Open and run all cells in `eda.ipynb`. This will:
 - Analyze the dataset
 - Generate figures
@@ -390,7 +402,15 @@ Open and run all cells in `neuralNetwork.ipynb`. This will:
 
 ### Step 3: Predict on New Images
 
-Open `predict.ipynb`, change `IMAGE_PATH` in Cell 4 to your satellite image, and run all cells to get a risk prediction.
+(Open `predict.ipynb`, change `IMAGE_PATH` in Cell 4 to your satellite image, and run all cells to get a risk prediction.)
+
+### Step 4: Sentinel-2 Surface Mapping (separate track)
+
+```bash
+cd ../sentinel2
+```
+
+Open and run `s2_simple.ipynb` (clean standalone patch CNN, training + single-image prediction).
 
 ---
 
@@ -444,8 +464,8 @@ Open `predict.ipynb`, change `IMAGE_PATH` in Cell 4 to your satellite image, and
 
 ### Future Improvements
 
-1. **More Data:** Real Sentinel-2 scenes via `s2/download_sentinel2.py` (see `s2_surface_mapping.ipynb`); NDSI starter labels + manual cleanup.
-2. **Surface mapping (built, Sentinel-2 only):** `s2/` patch CNN (snow/ice/debris) on 5 real L2A crops (May 2021 – Dec 2024, NDSI starter labels, SCL cloud/shadow masking, scene-separated splits): ~840 patches after masking, test acc **~96%**, macro-F1 **~0.94** (`outputs/s2_results.json`). Self-contained training notebook: `s2_model_training.ipynb` (verifies headless via nbconvert). Cover trend `outputs/s2_cover_trend.png` + `s2_cover.csv`: spring scenes show more ice (May 2023 ice ~21% of valid), winter scenes debris-heavy with zero predicted ice — partly illumination, documented as a caveat. Next: ~200-patch manual audit to quantify starter-label noise.
+1. **More Data:** Real Sentinel-2 scenes via `sentinel2/s2/download_sentinel2.py`; NDSI starter labels + manual cleanup.
+2. **Surface mapping (built, Sentinel-2 only):** `s2/` patch CNN (snow/ice/debris) on 5 real L2A crops (May 2021 – Dec 2024, NDSI starter labels, SCL cloud/shadow masking, scene-separated splits): ~840 patches after masking, test acc **~96%**, macro-F1 **~0.94** (`outputs/s2_results.json`). Self-contained training: `sentinel2/s2_simple.ipynb` (+ `sentinel2/s2/train_surface_cnn.py` script for CLI runs). Cover trend `outputs/s2_cover_trend.png` + `s2_cover.csv`: spring scenes show more ice (May 2023 ice ~21% of valid), winter scenes debris-heavy with zero predicted ice — partly illumination, documented as a caveat. Next: ~200-patch manual audit to quantify starter-label noise.
 2. **Transfer Learning:** Use pre-trained ResNet-50 or EfficientNet as a backbone; fine-tune on this dataset for much better accuracy.
 3. **Change Detection:** Use pairs of before/after images and compute a difference map to detect structural changes in the glacier.
 4. **Real-time API:** Deploy the trained model as a REST API (FastAPI/Flask) so it can process new satellite images automatically.

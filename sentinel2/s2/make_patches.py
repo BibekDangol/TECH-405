@@ -9,7 +9,8 @@ Two modes (auto-detected):
      (fetch via s2/fetch_scl.py; classes 0,1,3,7,8,9,10 excluded,
      patches <50% valid skipped).
 2. Fallback screenshot mode — no S2 files present (offline demo).
-   Uses dataset/avalanche + dataset/no_avalanche RGB PNGs with a pure-RGB
+   Uses ../early_late/dataset/avalanche + ../early_late/dataset/no_avalanche
+   RGB PNGs with a pure-RGB
    heuristic (bright->snow, blue-grey->ice, dark/brown->debris) so the CNN
    pipeline still runs end-to-end. Starter labels only, not ground truth.
 
@@ -32,7 +33,8 @@ from PIL import Image
 
 CLASSES = ["snow", "ice", "debris"]
 S2_DIR = Path("data_s2")
-SHOT_DIRS = [Path("dataset/avalanche"), Path("dataset/no_avalanche")]
+# Fallback screenshots live in the early_late track (CWD = sentinel2/).
+SHOT_DIRS = [Path("../early_late/dataset/avalanche"), Path("../early_late/dataset/no_avalanche")]
 
 
 def s2_label_patch(green, swir, red, nir):
@@ -133,7 +135,7 @@ def main():
             if d.exists():
                 files += sorted(d.glob("*.png"))
         if not files:  # legacy flat layout
-            files = sorted(Path("dataset").glob("*.png"))
+            files = sorted(Path("../early_late/dataset").glob("*.png"))
         for f in files:
             img = Image.open(f).convert("RGB").resize((512, 512))
             arr = np.asarray(img)
